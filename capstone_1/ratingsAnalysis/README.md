@@ -1,11 +1,20 @@
-## These notebooks contain routines for querying the API's of BreweryDB and Untappd.  
+## These notebooks contain various analyses of the Untappd ratings  
 
-Since you can't just ask Untappd for a huge list of IPA ratings, or even a list of IPA's, you need to start by asking BreweryDB for a list of styles and then a list of all their beer listings for whichever styles you choose. That's covered in <b>BreweryDB IPA getter.ipynb</b>  
+<b>Results.ipynb</b> takes a look at the checkins from a few different angles:  
 
-The resulting list of IPA's can then be used to query Untappd for checkins/ratings, but if you query by beer name, your results will pile up very slowly.  If you instead query by the brewers of those beers, you'll get at least as many ratings for those target beer names, plus a lot of other beers made by the queried brewery names.  That part is covered in <b>Joining Untappd and BreweryDB.ipynb</b>  
+1) It models them as a networkx bipartite graph with Users as one partition and Beers as the other, with ratings as edges.  The networkx methods available on that resulting graph, such as diameter(), turn out to take too long to run, due to the graph size, so I just used my own graph representation to calculate the sparsity of the User-Beer-Rating graph (It's very sparse).
 
-Now that you have a bunch of ratings, with an intentional bias towards IPA raters, you can speed up the process of amassing IPA checkins by querying the User Feed endpoint of the API for each of the users who showed up the most in the previous notebook.  This is done in <b>UserFeedGetter.ipynb</b>   
+2) It attempts to use the Surprise library to apply SVD and K-Nearest Neighbors to the ratings in order to predict unseen ratings.  Both of these approaches fail to compete with an educated baseline estimate that's calculated by simply adding the user's mean bias to the mean overall rating for the beer.  The KNN in particular underperforms, which suggests that the graph is simply too sparse for such analysis.
 
-The above procedure seems to be the fastest way to accumulate the desired data, namely IPA checkins, but there are 2 features that are usually missing from the User Feed API endpoint, and I needed those 2 features in my analysis:  First, the Overall/Global Rating for each beer, and second, the text description of the beer as provided by the brewer.  The endpoints that contain those features are User Beer and Beer Info, which are queried in <b>UserBeerGetter.ipynb</b> and <b>Global Beer Adder.ipynb</b> to fill in the blanks.
+3) An attempt is made to calculate Pearson similarities for pairs of users and to adjust the educated baseline predictions slightly, where justified.  After much parameter tuning, any tiny improvement upon the baseline appears to be just overfitting the parameters to the test batch.
+
+<b>Results_2.ipynb</b> uses sklearn's GradientBoostingRegressor to attempt to beat the baseline predictions, but the only features that turn out to have any importance are alcohol content and global rating of the beer.  
+
+<b>DescriptionNLP.ipynb</b> uses sklearn's SGDRegressor to find correlations between the terms used in beer descriptions and ratings.  The learned weights can help predict global ratings for new beers.  For models trained on individual users, however, the known global rating of the beer is still the best predictor, at least until the user has rated over 150 beers, at which point the descriptions can begin to help the predictions.  The way they can help at this point is shown in <b>FrequentRaters.ipynb</b>, where the rank accuracy of recommendations begins to beat the baseline accuracy.  
+
+<b>Mile_2.ipynb</b> revisits Pearson similarities between user pairs and finds that with enough commonly-rated beers, user similarity can improve the recommendations.  This notebook uses an online learning method for every Pearson number, where a large dictionary stores the components of the Pearson calculation needed to update each number every time one of the users rates a new beer.  <b>Mile3.ipynb</b> is mostly the same, except that it just uses scipy stats' Pearson function to calculate each similarity.
+
+The other notebooks in this directory are just used for reports which incorporate the above notebooks and comprise pieces of the overall project.
+
 
 
