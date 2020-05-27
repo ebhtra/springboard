@@ -12,7 +12,7 @@
 <b>EDA_cap2.ipynb</b> shows the code used for the <b>Sick_Travelers.pdf</b>, and  
 
 <b>Capstone_2_Data.ipynb</b> shows how all the data were gathered, cleaned, and structured.  
-
+Best viewed [here <--](https://nbviewer.jupyter.org/github/ebhtra/springboard/blob/master/capstone_2/Capstone_2_Data.ipynb)
 
 
 
