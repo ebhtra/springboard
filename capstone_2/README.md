@@ -1,5 +1,9 @@
 ## Map of COVID-19 Travelers and Exploration of Their Behavior
 
+<b>The simplest way to view this project in its entirety is to click on the nbviewer link [HERE](https://nbviewer.jupyter.org/github/ebhtra/springboard/blob/master/capstone_2/Capstone_2_Final_Report.ipynb)</b>  
+
+That nbviewer displays the following parts:  
+
 <b>Sick_Travelers.pdf</b> is a short report about the patients chosen for this exploration.  
 
 <b>Sick_Traveler_Map.pdf</b> shows an example of exploring the interactive map.  
